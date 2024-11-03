@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Actual</title>
+</head>
+<body>
+    <h1>Clima Actual</h1>
+    <input type="text" id="city" placeholder="Ingrese ciudad" />
+    <button id="getWeather">Obtener Clima</button>
+    <div id="weatherInfo"></div>
+
+    <script>
+        const apiKey = 'b96bd7c8e48a453c843f446649704048'; // Aquí está tu clave de API
+        const weatherInfo = document.getElementById('weatherInfo');
+        
+        document.getElementById('getWeather').addEventListener('click', () => {
+            const city = document.getElementById('city').value;
+            fetchWeather(city);
+        });
+
+        async function fetchWeather(city) {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+                if (!response.ok) {
+                    throw new Error('Error en la conexión a la API');
+                }
+                const data = await response.json();
+                displayWeather(data);
+            } catch (error) {
+                weatherInfo.innerHTML = `<p>${error.message}</p>`;
+            }
+        }
+
+        function displayWeather(data) {
+            if (data.cod === 200) {
+                const { main, weather, name } = data;
+                weatherInfo.innerHTML = `
+                    <h2>Clima en ${name}</h2>
+                    <p>Temperatura: ${main.temp} °C</p>
+                    <p>Condición: ${weather[0].description}</p>
+                    <p>Humedad: ${main.humidity}%</p>
+                `;
+            } else {
+                weatherInfo.innerHTML = `<p>Ciudad no encontrada</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
